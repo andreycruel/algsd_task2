@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -146,7 +147,16 @@ void printPositions(const std::vector<int>& positions) {
     std::cout << "]\n";
 }
 
-int main() {
+void printSearchResult(const std::string& text, const std::string& pattern,
+                       int startIndex, int endIndex) {
+    std::cout << "First index: " << findFirst(text, pattern) << '\n';
+    std::cout << "All indices: ";
+    printPositions(findAll(text, pattern));
+    std::cout << "Indices in [" << startIndex << "; " << endIndex << "]: ";
+    printPositions(findAllInRange(text, pattern, startIndex, endIndex));
+}
+
+void runDemonstration() {
     const std::string text =
         "std::move_iterator is an iterator adaptor which behaves exactly like "
         "the underlying iterator";
@@ -154,13 +164,50 @@ int main() {
 
     std::cout << "Text: " << text << '\n';
     std::cout << "Pattern: " << pattern << '\n';
-    std::cout << "First index: " << findFirst(text, pattern) << '\n';
-    std::cout << "All indices: ";
-    printPositions(findAll(text, pattern));
-    std::cout << "Indices in [17; 91]: ";
-    printPositions(findAllInRange(text, pattern, 17, 91));
+    printSearchResult(text, pattern, 17, 91);
     std::cout << "Indices in [28; 36]: ";
     printPositions(findAllInRange(text, pattern, 28, 36));
+}
+
+void runManualInput() {
+    std::string text;
+    std::string pattern;
+    int startIndex;
+    int endIndex;
+
+    std::cout << "Enter text: ";
+    std::getline(std::cin, text);
+    std::cout << "Enter pattern: ";
+    std::getline(std::cin, pattern);
+    std::cout << "Enter inclusive range start and end: ";
+
+    if (!(std::cin >> startIndex >> endIndex)) {
+        std::cout << "Range must contain two integer indices.\n";
+        return;
+    }
+
+    printSearchResult(text, pattern, startIndex, endIndex);
+}
+
+int main() {
+    int mode;
+    std::cout << "1 - demonstration, 2 - manual input: ";
+
+    if (!(std::cin >> mode)) {
+        std::cout << "Input error.\n";
+        return 1;
+    }
+
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (mode == 1) {
+        runDemonstration();
+    } else if (mode == 2) {
+        runManualInput();
+    } else {
+        std::cout << "Unknown mode.\n";
+        return 1;
+    }
 
     return 0;
 }
